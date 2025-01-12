@@ -1,4 +1,7 @@
 import sqlite3
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Database:
     _instance = None
@@ -8,6 +11,8 @@ class Database:
             cls._instance = super(Database, cls).__new__(cls)
             cls._instance.connection = sqlite3.connect('messages.db', check_same_thread=False)
             cls.init_db()
+            logger.info("Database initialized")
+
         return cls._instance
 
     @staticmethod
@@ -23,12 +28,16 @@ class Database:
             )
         ''')
         conn.commit()
+        logger.info("Database schema initialized")
+
 
     def write_message(self, message):
         conn = self.connection
         conn.execute('INSERT INTO messages (sender, receiver, content, timestamp) VALUES (?, ?, ?, ?)',
                      (message.sender, message.receiver, message.content, message.timestamp))
         conn.commit()
+        logger.info(f"Message written to database: {message}")
+
     def get_messages_for_receiver(self, currUser):
         conn = self.connection
         cursor = conn.execute('''
@@ -51,7 +60,7 @@ class Database:
             
             msg = {'sender': sender, 'content': content, 'timestamp': timestamp}
             messages[other_party].append(msg)
-        
+        logger.info(f"Messages retrieved for user {currUser}")
         return messages
     
     @classmethod
