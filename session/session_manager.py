@@ -28,6 +28,6 @@ class SessionManager:
                 return name
         return None
     def get_sessions(self, user):
-        sessions = self._connected_clients.get(user.name, [])
-        logger.info(f"Sessions retrieved for user {user.name}: {sessions}")
+        sessions = self._connected_clients.get(user, [])
+        logger.info(f"Sessions retrieved for user {user}: {sessions}")
         return sessions
